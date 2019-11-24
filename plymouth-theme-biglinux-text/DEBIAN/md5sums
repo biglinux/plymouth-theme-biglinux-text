@@ -1,0 +1,7 @@
+3774778347bddd6bd9f5e22de90edf45  DEBIAN/postinst
+c9d8bdfdcda60cab7cf94276a88b5a63  DEBIAN/postrm
+e5dc6a4e2f5231c403f537af0fae9d97  DEBIAN/prerm
+002a1dbc8cb905927ad2753080705bf2  DEBIAN/triggers
+d41d8cd98f00b204e9800998ecf8427e  DEBIAN/md5sums
+65fe634546967f1575a5e020f78cd8c2  DEBIAN/control
+e1ee8f4346a61bf1bdcf7b1284dce1b8  usr/share/plymouth/themes/biglinux-text/biglinux-text.plymouth.in

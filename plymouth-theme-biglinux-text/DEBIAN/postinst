@@ -1,0 +1,48 @@
+#!/bin/sh -e
+
+
+
+error()
+{
+    RET=$?
+    MSG=$1
+    echo "E: $MSG";
+    exit $RET
+}
+
+case "$1" in
+    configure|triggered)
+        # We remove leftover generated file from previous plymouth version. Can be removed on xenial+1
+        if dpkg --compare-versions "$2" le-nl "1:16.04ubuntu1~"; then
+            rm -f /lib/plymouth/themes/biglinux-text/biglinux-text.plymouth
+        fi
+        # we keep that rmdir unconditional as we want to ensure that the dir is
+        # removed at some point (alternatives on other theme package removing
+        # default links may happens later)
+        rmdir -p --ignore-fail-on-non-empty /lib/plymouth/ || true
+
+        sed -re \
+            "/\[ubuntu-text\]/ {
+                    N;
+                    s/(title=biglinux ).*\$/\1$(lsb_release -rs)/
+            }" /usr/share/plymouth/themes/biglinux-text/biglinux-text.plymouth.in \
+                    > /usr/share/plymouth/themes/biglinux-text/biglinux-text.plymouth
+        update-alternatives \
+            --install /usr/share/plymouth/themes/text.plymouth text.plymouth \
+            /usr/share/plymouth/themes/biglinux-text/biglinux-text.plymouth 60 || error "Failed to update-alternatives"
+
+        if which update-initramfs >/dev/null 2>&1; then
+            update-initramfs -u || error "Failed to update-initramfs"
+        fi
+        ;;
+
+    abort-upgrade|abort-deconfigure|abort-remove)
+        ;;
+
+    *)
+        echo "$0 called with unknown argument \`$1'" 1>&2
+        exit 1
+        ;;
+esac
+
+exit 0
